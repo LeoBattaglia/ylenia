@@ -1,9 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.HTMLParser = void 0;
-var HTMLParser = /** @class */ (function () {
-    function HTMLParser() {
+exports.DataSources = void 0;
+//Class
+var DataSources = /** @class */ (function () {
+    //Constructor
+    function DataSources(fileString) {
+        this.fileString = fileString;
     }
-    return HTMLParser;
+    return DataSources;
 }());
-exports.HTMLParser = HTMLParser;
+exports.DataSources = DataSources;
+//# sourceMappingURL=index.js.map
