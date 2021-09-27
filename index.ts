@@ -1,4 +1,5 @@
 //Imports
+import * as func from "./functions";
 import * as sys from "samara";
 import {JSONObject, SourceObject} from "samara";
 
@@ -18,16 +19,16 @@ export class DataSources{
         let json:JSONObject = new JSONObject();
         json.addName(source.array);
         json.openArray();
+
+        //TODO: Insert Default-Values
+
         json.closeArray();
         sys.writeFile(source.json, json.getString());
     }
 
     private static createFileController(source){
         let sc:SourceObject = new SourceObject();
-        sc.add("//Imports", 0);
-        sc.add("import * as " + source.array + " from \"./" + source.json + "\";", 0);
-        sc.add("import {" + source.object_name + "} from \"./" + source.object_file.replace(".ts", "") + "\";", 0);
-        sc.newLine();
+        sc.add(func.createControllerImports(source), 0);
         sc.add("//Class", 0);
         let ext:string = "";
         if(!sys.isNull(source.controller_extends)){
@@ -35,51 +36,28 @@ export class DataSources{
         }
         sc.add("export class " + source.controller_name + ext + "{", 0);
         sc.add("//Declarations", 1);
-        sc.add("private " + source.controller_array + ":" + source.object_name + "[];", 1);
+        sc.add("private readonly " + source.controller_array + ":" + source.object_name + "[];", 1);
         sc.newLine();
-        sc.add("//Constructor", 1);
-        sc.add("constructor(){", 1);
-        sc.add("this." + source.controller_array + " = [];", 2);
-        sc.add("}", 1);
-        sc.newLine();
+        sc.add(func.createControllerConstructor(source), 0);
         sc.add("//Methods", 1);
-        sc.add("add(" + source.controller_object.toLowerCase() + ":" + source.object_name + "):void{", 1);
-        sc.add("this." + source.controller_array + ".push(" + source.controller_object.toLowerCase() + ");", 2);
-        sc.add("}", 1);
-        sc.newLine();
-        let id:string = this.getIdentifier(source.attributes);
-        sc.add("addProtected(" + source.controller_object.toLowerCase() + ":" + source.object_name + "):void{", 1);
-        sc.add("if(!this.exist(" + source.controller_object.toLowerCase() + "." + id + ")){", 2);
-        sc.add("this.add(" + source.controller_object.toLowerCase() + ");", 3);
-        sc.add("}", 2);
-        sc.add("}", 1);
-        sc.newLine();
-        sc.add("exist(" + id + ":string):Boolean{", 1);
-        sc.add("return this.get(" + id + ") !== undefined;", 2);
-        sc.add("}", 1);
-        sc.newLine();
-        sc.add("get(" + id + ":string):" + source.object_name + "{", 1);
-        sc.add("for(let " + source.controller_object.toLowerCase() + " of this." + source.controller_array + "){", 2);
-        sc.add("if(" + source.controller_object.toLowerCase() + "." + id + " === " + id + "){", 3);
-        sc.add("return " + source.controller_object.toLowerCase() + ";", 4);
-        sc.add("}", 3);
-        sc.add("}", 2);
-        sc.add("return undefined;", 2);
-        sc.add("}", 1);
-        sc.newLine();
-
-
-
-
+        sc.add(func.createControllerAdd(source), 0);
+        //let id:string = this.getIdentifier(source.attributes);
+        sc.add(func.createControllerAddProtected(source), 0);
+        sc.add(func.createControllerExist(source), 0);
+        sc.add(func.createControllerGet(source), 0);
+        sc.add(func.createControllerGetAll(source), 0);
+        sc.add(func.createControllerLoad(source), 0);
+        sc.add(func.createControllerRemove(source), 0);
+        sc.add(func.createControllerSave(source), 0);
         sc.add("}", 0);
         sys.writeFile(source.controller_file, sc.getString());
     }
 
     private static createFileObject(source){
         let sc:SourceObject = new SourceObject();
-        sc.add("//Imports", 0);
-        sc.add("import * as " + source.array + " from \"./" + source.json + "\";", 0);
-        sc.newLine();
+        //sc.add("//Imports", 0);
+        //sc.add(func.createImportData(source.json), 0);
+        //sc.newLine();
         sc.add("//Class", 0);
         let ext:string = "";
         if(!sys.isNull(source.object_extends)){
