@@ -58,7 +58,6 @@ export class DataSources{
         sc.add(func.createControllerConstructor(source), 0);
         sc.add("//Methods", 1);
         sc.add(func.createControllerAdd(source), 0);
-        //let id:string = this.getIdentifier(source.attributes);
         sc.add(func.createControllerAddProtected(source), 0);
         sc.add(func.createControllerExist(source), 0);
         sc.add(func.createControllerGet(source), 0);
@@ -88,9 +87,7 @@ export class DataSources{
 
     generateSources():Boolean{
         if(this.parseJSON()){
-            console.log("VALID SOURCE");
             for(let source of this.json.sources){
-                console.log("Name: " + source.name);
                 DataSources.createFileJSON(source);
                 DataSources.createFileObject(source);
                 DataSources.createFileController(source);
@@ -100,23 +97,10 @@ export class DataSources{
         return false;
     }
 
-    private static getIdentifier(attributes):string{
-        for(let att of attributes){
-            if(att.identifier){
-                return att.name;
-            }
-        }
-        return undefined;
-    }
-
-    parseJSON():Boolean{
+    private parseJSON():Boolean{
         try{
             this.json = JSON.parse(sys.readFile(this.path));
-            if(this.json.sources === undefined){
-                return false;
-            }else{
-                return true;
-            }
+            return this.json.sources !== undefined;
         }catch(e){
             return false;
         }

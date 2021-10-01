@@ -56,7 +56,6 @@ var DataSources = /** @class */ (function () {
         sc.add(func.createControllerConstructor(source), 0);
         sc.add("//Methods", 1);
         sc.add(func.createControllerAdd(source), 0);
-        //let id:string = this.getIdentifier(source.attributes);
         sc.add(func.createControllerAddProtected(source), 0);
         sc.add(func.createControllerExist(source), 0);
         sc.add(func.createControllerGet(source), 0);
@@ -84,10 +83,8 @@ var DataSources = /** @class */ (function () {
     };
     DataSources.prototype.generateSources = function () {
         if (this.parseJSON()) {
-            console.log("VALID SOURCE");
             for (var _i = 0, _a = this.json.sources; _i < _a.length; _i++) {
                 var source = _a[_i];
-                console.log("Name: " + source.name);
                 DataSources.createFileJSON(source);
                 DataSources.createFileObject(source);
                 DataSources.createFileController(source);
@@ -96,24 +93,10 @@ var DataSources = /** @class */ (function () {
         }
         return false;
     };
-    DataSources.getIdentifier = function (attributes) {
-        for (var _i = 0, attributes_1 = attributes; _i < attributes_1.length; _i++) {
-            var att = attributes_1[_i];
-            if (att.identifier) {
-                return att.name;
-            }
-        }
-        return undefined;
-    };
     DataSources.prototype.parseJSON = function () {
         try {
             this.json = JSON.parse(sys.readFile(this.path));
-            if (this.json.sources === undefined) {
-                return false;
-            }
-            else {
-                return true;
-            }
+            return this.json.sources !== undefined;
         }
         catch (e) {
             return false;

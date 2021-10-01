@@ -1,6 +1,6 @@
 {
     "name": "ylenia",
-    "version": "0.1.2",
+    "version": "0.1.3",
     "description": "TypeScript-DataSources for JSON. Generates dynamic TypeScript-Classes and JSON-Files.",
     "main": "index.js",
     "scripts": {},
