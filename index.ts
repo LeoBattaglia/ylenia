@@ -19,11 +19,28 @@ export class DataSources{
         let json:JSONObject = new JSONObject();
         json.addName(source.array);
         json.openArray();
-
-        //TODO: Insert Default-Values
-
+        let attributes = [];
+        for(let att of source.attributes){
+            attributes.push({name: att.name, type: att.type});
+        }
+        for(let i = 0; i < source.defaults.length; i++){
+            json.openObject();
+            for(let o = 0; o < source.defaults.length; o++){
+                let isString:Boolean;
+                if(attributes[o].type === "boolean" || attributes[o].type === "number"){
+                    isString = false;
+                }else{
+                    isString = true;
+                }
+                let setComma:Boolean;
+                o < source.defaults.length - 1 ? setComma = true : setComma = false;
+                json.addValue(attributes[o].name, source.defaults[i][o], isString, setComma);
+            }
+            json.closeObject();
+            i < source.defaults.length - 1 ? json.add(",") : undefined;
+        }
         json.closeArray();
-        sys.writeFile(source.json, json.getString());
+        sys.writeFile(source.file_json, json.getString());
     }
 
     private static createFileController(source){
@@ -50,7 +67,7 @@ export class DataSources{
         sc.add(func.createControllerRemove(source), 0);
         sc.add(func.createControllerSave(source), 0);
         sc.add("}", 0);
-        sys.writeFile(source.controller_file, sc.getString());
+        sys.writeFile(source.file_controller, sc.getString());
     }
 
     private static createFileObject(source){
@@ -66,10 +83,10 @@ export class DataSources{
         sc.add(func.createObjectGetMethods(source), 0);
         sc.add(func.createObjectSetMethods(source), 0);
         sc.add("}", 0);
-        sys.writeFile(source.object_file, sc.getString());
+        sys.writeFile(source.file_object, sc.getString());
     }
 
-    generateSource():Boolean{
+    generateSources():Boolean{
         if(this.parseJSON()){
             console.log("VALID SOURCE");
             for(let source of this.json.sources){

@@ -16,9 +16,30 @@ var DataSources = /** @class */ (function () {
         var json = new samara_1.JSONObject();
         json.addName(source.array);
         json.openArray();
-        //TODO: Insert Default-Values
+        var attributes = [];
+        for (var _i = 0, _a = source.attributes; _i < _a.length; _i++) {
+            var att = _a[_i];
+            attributes.push({ name: att.name, type: att.type });
+        }
+        for (var i = 0; i < source.defaults.length; i++) {
+            json.openObject();
+            for (var o = 0; o < source.defaults.length; o++) {
+                var isString = void 0;
+                if (attributes[o].type === "boolean" || attributes[o].type === "number") {
+                    isString = false;
+                }
+                else {
+                    isString = true;
+                }
+                var setComma = void 0;
+                o < source.defaults.length - 1 ? setComma = true : setComma = false;
+                json.addValue(attributes[o].name, source.defaults[i][o], isString, setComma);
+            }
+            json.closeObject();
+            i < source.defaults.length - 1 ? json.add(",") : undefined;
+        }
         json.closeArray();
-        sys.writeFile(source.json, json.getString());
+        sys.writeFile(source.file_json, json.getString());
     };
     DataSources.createFileController = function (source) {
         var sc = new samara_1.SourceObject();
@@ -44,7 +65,7 @@ var DataSources = /** @class */ (function () {
         sc.add(func.createControllerRemove(source), 0);
         sc.add(func.createControllerSave(source), 0);
         sc.add("}", 0);
-        sys.writeFile(source.controller_file, sc.getString());
+        sys.writeFile(source.file_controller, sc.getString());
     };
     DataSources.createFileObject = function (source) {
         var sc = new samara_1.SourceObject();
@@ -59,9 +80,9 @@ var DataSources = /** @class */ (function () {
         sc.add(func.createObjectGetMethods(source), 0);
         sc.add(func.createObjectSetMethods(source), 0);
         sc.add("}", 0);
-        sys.writeFile(source.object_file, sc.getString());
+        sys.writeFile(source.file_object, sc.getString());
     };
-    DataSources.prototype.generateSource = function () {
+    DataSources.prototype.generateSources = function () {
         if (this.parseJSON()) {
             console.log("VALID SOURCE");
             for (var _i = 0, _a = this.json.sources; _i < _a.length; _i++) {

@@ -70,8 +70,8 @@ exports.createControllerGetAll = createControllerGetAll;
 function createControllerImports(source) {
     var sc = new samara_1.SourceObject();
     sc.add("//Imports", 0);
-    sc.add("import * as data from \"" + source.json + "\";", 0);
-    sc.add("import {" + source.object_name + "} from \"" + source.object_file.replace(".ts", "") + "\";", 0);
+    sc.add("import * as data from \"" + source.file_json + "\";", 0);
+    sc.add("import {" + source.object_name + "} from \"" + source.file_object.replace(".ts", "") + "\";", 0);
     sc.add("import * as func from \"./functions\";", 0);
     return sc.getString();
 }
@@ -115,7 +115,7 @@ function createControllerSave(source) {
     sc.add("save(){", 1);
     //sc.add("for(let " + source.controller_object.toLowerCase() + " of this." + source.controller_array + "){", 2);
     sc.add("let json:string = JSON.stringify(this." + source.array + ");", 2);
-    sc.add("func.writeFile(\"" + source.json + "\", json);", 2);
+    sc.add("func.writeFile(\"" + source.file_json + "\", json);", 2);
     //TODO: All
     //sc.add("}", 2);
     sc.add("}", 1);
