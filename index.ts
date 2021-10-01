@@ -36,7 +36,7 @@ export class DataSources{
         }
         sc.add("export class " + source.controller_name + ext + "{", 0);
         sc.add("//Declarations", 1);
-        sc.add("private readonly " + source.controller_array + ":" + source.object_name + "[];", 1);
+        sc.add("private readonly " + source.array + ":" + source.object_name + "[];", 1);
         sc.newLine();
         sc.add(func.createControllerConstructor(source), 0);
         sc.add("//Methods", 1);
@@ -55,53 +55,16 @@ export class DataSources{
 
     private static createFileObject(source){
         let sc:SourceObject = new SourceObject();
-        //sc.add("//Imports", 0);
-        //sc.add(func.createImportData(source.json), 0);
-        //sc.newLine();
         sc.add("//Class", 0);
         let ext:string = "";
         if(!sys.isNull(source.object_extends)){
             ext = " extends " + source.object_extends;
         }
         sc.add("export class " + source.object_name + ext + "{", 0);
-        sc.add("//Declarations", 1);
-        for(let att of source.attributes){
-            sc.add("private _" + att.name + ":" + att.type + ";", 1);
-        }
-        sc.newLine();
-        sc.add("//Constructor", 1);
-        let con:string = "constructor(";
-        let count:number = 0;
-        for(let att of source.attributes){
-            if(att.initialize){
-                count > 0 ? con += ", " : undefined;
-                con += att.name + ":" + att.type;
-                count++;
-            }
-        }
-        con += "){";
-        sc.add(con, 1);
-        for(let att of source.attributes){
-            if(att.initialize){
-                sc.add("this." + att.name + " = " + att.name + ";", 2);
-            }
-        }
-        sc.add("}", 1);
-        sc.newLine();
-        sc.add("//Get-Methods", 1);
-        for(let att of source.attributes){
-            sc.add("get " + att.name + "():" + att.type + "{", 1);
-            sc.add("return this._" + att.name + ";", 2);
-            sc.add("}", 1);
-            sc.newLine();
-        }
-        sc.add("//Set-Methods", 1);
-        for(let att of source.attributes){
-            sc.add("set " + att.name + "(value:" + att.type + "){", 1);
-            sc.add("this._" + att.name + " = value;", 2);
-            sc.add("}", 1);
-            sc.newLine();
-        }
+        sc.add(func.createObjectDeclarations(source), 0);
+        sc.add(func.createObjectConstructor(source), 0);
+        sc.add(func.createObjectGetMethods(source), 0);
+        sc.add(func.createObjectSetMethods(source), 0);
         sc.add("}", 0);
         sys.writeFile(source.object_file, sc.getString());
     }

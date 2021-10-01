@@ -1,4 +1,4 @@
 # Ylenia
-TypeScript-Code-Generator in Development-Status.
+TypeScript-Code- and JSON-Generator.
 
 ## Not finished yet!
