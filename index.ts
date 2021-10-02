@@ -46,6 +46,7 @@ export class DataSources{
     private static createFileController(source){
         let sc:SourceObject = new SourceObject();
         sc.add(func.createControllerImports(source), 0);
+        sc.add(func.createControllerConstants(), 0);
         sc.add("//Class", 0);
         let ext:string = "";
         if(!sys.isNull(source.controller_extends)){

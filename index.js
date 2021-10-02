@@ -44,6 +44,7 @@ var DataSources = /** @class */ (function () {
     DataSources.createFileController = function (source) {
         var sc = new samara_1.SourceObject();
         sc.add(func.createControllerImports(source), 0);
+        sc.add(func.createControllerConstants(), 0);
         sc.add("//Class", 0);
         var ext = "";
         if (!sys.isNull(source.controller_extends)) {

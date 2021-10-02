@@ -21,6 +21,13 @@ export function createControllerAddProtected(source):string{
     return sc.getString();
 }
 
+export function createControllerConstants():string{
+    let sc:SourceObject = new SourceObject();
+    sc.add("//Constants", 0);
+    sc.add("const fs = require(\"fs\");", 0);
+    return sc.getString();
+}
+
 export function createControllerConstructor(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("//Constructor", 1);
@@ -67,11 +74,20 @@ export function createControllerGetAll(source):string{
 }
 
 export function createControllerImports(source):string{
+    let file_controller:string = source.file_controller;
+    let file_json:string = source.file_json;
+    let file_object:string = source.file_object;
+
+
+
+    console.log("Controller: " + file_controller);
+    console.log("JSON: " + file_json);
+    console.log("Object: " + file_object);
+
     let sc:SourceObject = new SourceObject();
     sc.add("//Imports", 0);
     sc.add("import * as data from \"" + source.file_json + "\";", 0);
     sc.add("import {" + source.object_name + "} from \"" + source.file_object.replace(".ts", "") + "\";", 0);
-    sc.add("import * as func from \"./functions\";", 0);
     return sc.getString();
 }
 
@@ -112,10 +128,14 @@ export function createControllerSave(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("save(){", 1);
     //sc.add("for(let " + source.controller_object.toLowerCase() + " of this." + source.controller_array + "){", 2);
-    sc.add("let json:string = JSON.stringify(this." + source.array + ");", 2);
-    sc.add("func.writeFile(\"" + source.file_json + "\", json);", 2);
+    sc.add("let content:string = JSON.stringify(this." + source.array + ");", 2);
+    //sc.add("func.writeFile(\"" + source.file_json + "\", json);", 2);
 
-    //TODO: All
+    sc.add("fs.writeFile(\"" + source.file_json + "\", content, err => {", 2);
+    sc.add("if(err){", 3);
+    sc.add("console.error(err);", 4);
+    sc.add("}", 3);
+    sc.add("});", 2);
 
     //sc.add("}", 2);
     sc.add("}", 1);
