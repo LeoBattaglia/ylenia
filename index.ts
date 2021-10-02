@@ -33,7 +33,7 @@ export class DataSources{
                     isString = true;
                 }
                 let setComma:Boolean;
-                o < source.defaults.length - 1 ? setComma = true : setComma = false;
+                o < source.attributes.length - 1 ? setComma = true : setComma = false;
                 json.addValue(attributes[o].name, source.defaults[i][o], isString, setComma);
             }
             json.closeObject();

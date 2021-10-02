@@ -32,7 +32,7 @@ var DataSources = /** @class */ (function () {
                     isString = true;
                 }
                 var setComma = void 0;
-                o < source.defaults.length - 1 ? setComma = true : setComma = false;
+                o < source.attributes.length - 1 ? setComma = true : setComma = false;
                 json.addValue(attributes[o].name, source.defaults[i][o], isString, setComma);
             }
             json.closeObject();
