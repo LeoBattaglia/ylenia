@@ -78,16 +78,38 @@ function createControllerImports(source) {
     var file_controller = source.file_controller;
     var file_json = source.file_json;
     var file_object = source.file_object;
-    console.log("Controller: " + file_controller);
-    console.log("JSON: " + file_json);
-    console.log("Object: " + file_object);
+    file_json = createControllerImportsPath(file_controller, file_json);
+    file_object = createControllerImportsPath(file_controller, file_object).replace(".ts", "");
     var sc = new samara_1.SourceObject();
     sc.add("//Imports", 0);
-    sc.add("import * as data from \"" + source.file_json + "\";", 0);
-    sc.add("import {" + source.object_name + "} from \"" + source.file_object.replace(".ts", "") + "\";", 0);
+    sc.add("import * as data from \"" + file_json + "\";", 0);
+    sc.add("import {" + source.object_name + "} from \"" + file_object + "\";", 0);
     return sc.getString();
 }
 exports.createControllerImports = createControllerImports;
+function createControllerImportsPath(path_src, path_tgt) {
+    var src = path_src.split("/");
+    var tgt = path_tgt.split("/");
+    while (src[0] === tgt[0]) {
+        src.shift();
+        tgt.shift();
+    }
+    path_tgt = "";
+    if (src.length < 2) {
+        path_tgt = "./";
+    }
+    else {
+        for (var i = 0; i < src.length - 1; i++) {
+            path_tgt += "../";
+        }
+    }
+    var count = 0;
+    for (var i = 0; i < tgt.length; i++) {
+        i > 0 ? path_tgt += "/" : undefined;
+        path_tgt += tgt[i];
+    }
+    return path_tgt;
+}
 function createControllerLoad(source) {
     var sc = new samara_1.SourceObject();
     sc.add("load():void{", 1);

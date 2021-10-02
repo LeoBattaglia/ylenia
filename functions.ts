@@ -77,18 +77,37 @@ export function createControllerImports(source):string{
     let file_controller:string = source.file_controller;
     let file_json:string = source.file_json;
     let file_object:string = source.file_object;
-
-
-
-    console.log("Controller: " + file_controller);
-    console.log("JSON: " + file_json);
-    console.log("Object: " + file_object);
+    file_json = createControllerImportsPath(file_controller, file_json);
+    file_object = createControllerImportsPath(file_controller, file_object).replace(".ts", "");
 
     let sc:SourceObject = new SourceObject();
     sc.add("//Imports", 0);
-    sc.add("import * as data from \"" + source.file_json + "\";", 0);
-    sc.add("import {" + source.object_name + "} from \"" + source.file_object.replace(".ts", "") + "\";", 0);
+    sc.add("import * as data from \"" + file_json + "\";", 0);
+    sc.add("import {" + source.object_name + "} from \"" + file_object + "\";", 0);
     return sc.getString();
+}
+
+function createControllerImportsPath(path_src:string, path_tgt:string):string{
+    let src:string[] = path_src.split("/");
+    let tgt:string[] = path_tgt.split("/");
+    while(src[0] === tgt[0]){
+        src.shift();
+        tgt.shift();
+    }
+    path_tgt = "";
+    if(src.length < 2){
+        path_tgt = "./";
+    }else{
+        for(let i = 0; i < src.length - 1; i++){
+            path_tgt += "../";
+        }
+    }
+    let count:number = 0;
+    for(let i = 0; i < tgt.length; i++){
+        i > 0 ? path_tgt += "/" : undefined;
+        path_tgt += tgt[i];
+    }
+    return path_tgt;
 }
 
 export function createControllerLoad(source):string{
