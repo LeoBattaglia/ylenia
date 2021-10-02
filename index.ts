@@ -25,7 +25,7 @@ export class DataSources{
         }
         for(let i = 0; i < source.defaults.length; i++){
             json.openObject();
-            for(let o = 0; o < source.defaults.length; o++){
+            for(let o = 0; o < source.attributes.length; o++){
                 let isString:Boolean;
                 if(attributes[o].type === "boolean" || attributes[o].type === "number"){
                     isString = false;

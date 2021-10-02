@@ -23,7 +23,7 @@ var DataSources = /** @class */ (function () {
         }
         for (var i = 0; i < source.defaults.length; i++) {
             json.openObject();
-            for (var o = 0; o < source.defaults.length; o++) {
+            for (var o = 0; o < source.attributes.length; o++) {
                 var isString = void 0;
                 if (attributes[o].type === "boolean" || attributes[o].type === "number") {
                     isString = false;
