@@ -24,15 +24,8 @@ var DataSources = /** @class */ (function () {
         for (var i = 0; i < source.defaults.length; i++) {
             json.openObject();
             for (var o = 0; o < source.attributes.length; o++) {
-                var isString = void 0;
-                if (attributes[o].type === "boolean" || attributes[o].type === "number") {
-                    isString = false;
-                }
-                else {
-                    isString = true;
-                }
-                var setComma = void 0;
-                o < source.attributes.length - 1 ? setComma = true : setComma = false;
+                var isString = attributes[o].type === "string";
+                var setComma = o < source.attributes.length - 1;
                 json.addValue(attributes[o].name, source.defaults[i][o], isString, setComma);
             }
             json.closeObject();

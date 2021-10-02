@@ -26,14 +26,8 @@ export class DataSources{
         for(let i = 0; i < source.defaults.length; i++){
             json.openObject();
             for(let o = 0; o < source.attributes.length; o++){
-                let isString:Boolean;
-                if(attributes[o].type === "boolean" || attributes[o].type === "number"){
-                    isString = false;
-                }else{
-                    isString = true;
-                }
-                let setComma:Boolean;
-                o < source.attributes.length - 1 ? setComma = true : setComma = false;
+                let isString:Boolean = attributes[o].type === "string";
+                let setComma:Boolean = o < source.attributes.length - 1;
                 json.addValue(attributes[o].name, source.defaults[i][o], isString, setComma);
             }
             json.closeObject();
