@@ -117,9 +117,11 @@ export function createControllerLoad(source):string{
     let paras:string = "";
     let count:number = 0;
     for(let attribute of source.attributes){
-        count > 0 ? paras += ", " : undefined;
-        paras += source.controller_object.toLowerCase() + "." + attribute.name;
-        count++;
+        if(attribute.initialize){
+            count > 0 ? paras += ", " : undefined;
+            paras += source.controller_object.toLowerCase() + "." + attribute.name;
+            count++;
+        }
     }
     sc.add("let object:" + source.object_name + " = new " + source.object_name + "(" + paras + ");", 3);
     sc.add("this." + source.array + ".push(object);", 3);
@@ -188,6 +190,7 @@ export function createObjectDeclarations(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("//Declarations", 1);
     for(let att of source.attributes){
+        att.type === "array" ? att.type = "[]" : undefined;
         sc.add("private _" + att.name + ":" + att.type + ";", 1);
     }
     return sc.getString();

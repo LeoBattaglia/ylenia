@@ -118,9 +118,11 @@ function createControllerLoad(source) {
     var count = 0;
     for (var _i = 0, _a = source.attributes; _i < _a.length; _i++) {
         var attribute = _a[_i];
-        count > 0 ? paras += ", " : undefined;
-        paras += source.controller_object.toLowerCase() + "." + attribute.name;
-        count++;
+        if (attribute.initialize) {
+            count > 0 ? paras += ", " : undefined;
+            paras += source.controller_object.toLowerCase() + "." + attribute.name;
+            count++;
+        }
     }
     sc.add("let object:" + source.object_name + " = new " + source.object_name + "(" + paras + ");", 3);
     sc.add("this." + source.array + ".push(object);", 3);
@@ -190,6 +192,7 @@ function createObjectDeclarations(source) {
     sc.add("//Declarations", 1);
     for (var _i = 0, _a = source.attributes; _i < _a.length; _i++) {
         var att = _a[_i];
+        att.type === "array" ? att.type = "[]" : undefined;
         sc.add("private _" + att.name + ":" + att.type + ";", 1);
     }
     return sc.getString();
