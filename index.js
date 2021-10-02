@@ -24,9 +24,16 @@ var DataSources = /** @class */ (function () {
         for (var i = 0; i < source.defaults.length; i++) {
             json.openObject();
             for (var o = 0; o < source.attributes.length; o++) {
-                var isString = attributes[o].type === "string";
-                var setComma = o < source.attributes.length - 1;
-                json.addValue(attributes[o].name, source.defaults[i][o], isString, setComma);
+                if (source.attributes.type.toLowerCase() === "array") {
+                    json.addName(attributes[o].name);
+                    json.add("[]");
+                    o < source.attributes.length - 1 ? json.add(",") : undefined;
+                }
+                else {
+                    var isString = attributes[o].type === "string";
+                    var setComma = o < source.attributes.length - 1;
+                    json.addValue(attributes[o].name, source.defaults[i][o], isString, setComma);
+                }
             }
             json.closeObject();
             i < source.defaults.length - 1 ? json.add(",") : undefined;
