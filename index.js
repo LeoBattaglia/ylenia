@@ -24,7 +24,7 @@ var DataSources = /** @class */ (function () {
         for (var i = 0; i < source.defaults.length; i++) {
             json.openObject();
             for (var o = 0; o < source.attributes.length; o++) {
-                if (source.attributes.type.toLowerCase() === "array") {
+                if (attributes[o].type.toLowerCase() === "array") {
                     json.addName(attributes[o].name);
                     json.add("[]");
                     o < source.attributes.length - 1 ? json.add(",") : undefined;
