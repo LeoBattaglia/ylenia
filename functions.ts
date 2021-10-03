@@ -14,7 +14,13 @@ export function createControllerAdd(source):string{
 export function createControllerAddProtected(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("addProtected(" + source.controller_object.toLowerCase() + ":" + source.object_name + "):void{", 1);
-    sc.add("if(!this.exist(" + source.controller_object.toLowerCase() + "." + getIdentifier(source.attributes).name + ")){", 2);
+    let ids:any[] = getIdentifiers(source.attributes);
+    let stats:string = "";
+    for(let i = 0; i < ids.length; i++){
+        stats += source.controller_object.toLowerCase() + "." + ids[i].name;
+        i < ids.length - 1 ? stats += ", " : undefined;
+    }
+    sc.add("if(!this.exist(" + stats + ")){", 2);
     sc.add("this.add(" + source.controller_object.toLowerCase() + ");", 3);
     sc.add("}", 2);
     sc.add("}", 1);
@@ -43,25 +49,24 @@ export function createControllerConstructor(source):string{
 
 export function createControllerExist(source):string{
     let sc:SourceObject = new SourceObject();
-    let identifier = getIdentifier(source.attributes);
-    sc.add("exist(" + identifier.name + ":" + identifier.type + "):Boolean{", 1);
-    sc.add("return this.get(" + identifier.name + ") !== undefined;", 2);
+    let parasAndStats = getIdentifiersParasAndStats(source, "");
+    sc.add("exist(" + parasAndStats.paras + "):Boolean{", 1);
+    sc.add("return this.get(" + parasAndStats.names + ") !== undefined;", 2);
     sc.add("}", 1);
     return sc.getString();
 }
 
 export function createControllerGet(source):string{
     let sc:SourceObject = new SourceObject();
-    let identifier = getIdentifier(source.attributes);
-    sc.add("get(" + identifier.name + ":" + identifier.type + "):" + source.object_name + "{", 1);
+    let parasAndStats = getIdentifiersParasAndStats(source, source.controller_object.toLowerCase());
+    sc.add("get(" + parasAndStats.paras + "):" + source.object_name + "{", 1);
     sc.add("for(let " + source.controller_object.toLowerCase() + " of this." + source.array + "){", 2);
-    sc.add("if(" + source.controller_object.toLowerCase() + "." + identifier.name + " === " + identifier.name + "){", 3);
+    sc.add("if(" + parasAndStats.stats + "){", 3);
     sc.add("return " + source.controller_object.toLowerCase() + ";", 4);
     sc.add("}", 3);
     sc.add("}", 2);
     sc.add("return undefined;", 2);
     sc.add("}", 1);
-
     return sc.getString();
 }
 
@@ -132,10 +137,11 @@ export function createControllerLoad(source):string{
 
 export function createControllerRemove(source):string{
     let sc:SourceObject = new SourceObject();
-    let identifier = getIdentifier(source.attributes);
-    sc.add("remove(" + identifier.name + ":" + identifier.type + "):Boolean{", 1);
+    let ids:any[] = getIdentifiers(source.attributes);
+    let parasAndStats = getIdentifiersParasAndStats(source, "this." + source.array + "[i]");
+    sc.add("remove(" + parasAndStats.paras + "):Boolean{", 1);
     sc.add("for(let i=0; i<this." + source.array + ".length; i++){", 2);
-    sc.add("if(this." + source.array + "[i]." + identifier.name + " === " + identifier.name + "){", 3);
+    sc.add("if(" + parasAndStats.stats + "){", 3);
     sc.add("this." + source.array + ".splice(i, 1);", 4);
     sc.add("return true;", 4);
     sc.add("}", 3);
@@ -190,7 +196,7 @@ export function createObjectDeclarations(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("//Declarations", 1);
     for(let att of source.attributes){
-        att.type === "array" ? att.type = "[]" : undefined;
+        att.type === "array" ? att.type = "any[]" : undefined;
         sc.add("private _" + att.name + ":" + att.type + ";", 1);
     }
     return sc.getString();
@@ -220,16 +226,40 @@ export function createObjectSetMethods(source):string{
     return sc.getString();
 }
 
-export function getIdentifier(attributes){
+export function getIdentifiers(attributes):any[]{
+    let ids:any[] = [];
     for(let att of attributes){
         if(att.identifier){
-            return {
+            let object = {
                 name: att.name,
                 type: att.type
             };
+            ids.push(object);
         }
     }
-    return undefined;
+    return ids;
+}
+
+export function getIdentifiersParasAndStats(source, stats_begin:string):any{
+    let ids:any[] = getIdentifiers(source.attributes);
+    let paras:string = "";
+    let stats:string = "";
+    let names:string = "";
+    for(let i = 0; i < ids.length; i++){
+        paras += ids[i].name + ":" + ids[i].type;
+        stats += stats_begin + "." + ids[i].name + " === " + ids[i].name;
+        names += ids[i].name;
+        if(i < ids.length - 1){
+            paras += ", ";
+            stats += " && ";
+            names += ", ";
+        }
+    }
+    return {
+        paras: paras,
+        stats: stats,
+        names: names
+    }
 }
 
 export function writeFile(path:string, content:string):void{

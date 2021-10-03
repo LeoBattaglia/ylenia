@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeFile = exports.getIdentifier = exports.createObjectSetMethods = exports.createObjectGetMethods = exports.createObjectDeclarations = exports.createObjectConstructor = exports.createControllerSave = exports.createControllerRemove = exports.createControllerLoad = exports.createControllerImports = exports.createControllerGetAll = exports.createControllerGet = exports.createControllerExist = exports.createControllerConstructor = exports.createControllerConstants = exports.createControllerAddProtected = exports.createControllerAdd = void 0;
+exports.writeFile = exports.getIdentifiersParasAndStats = exports.getIdentifiers = exports.createObjectSetMethods = exports.createObjectGetMethods = exports.createObjectDeclarations = exports.createObjectConstructor = exports.createControllerSave = exports.createControllerRemove = exports.createControllerLoad = exports.createControllerImports = exports.createControllerGetAll = exports.createControllerGet = exports.createControllerExist = exports.createControllerConstructor = exports.createControllerConstants = exports.createControllerAddProtected = exports.createControllerAdd = void 0;
 //Imports
 var samara_1 = require("samara");
 var sys = require("samara");
@@ -16,7 +16,13 @@ exports.createControllerAdd = createControllerAdd;
 function createControllerAddProtected(source) {
     var sc = new samara_1.SourceObject();
     sc.add("addProtected(" + source.controller_object.toLowerCase() + ":" + source.object_name + "):void{", 1);
-    sc.add("if(!this.exist(" + source.controller_object.toLowerCase() + "." + getIdentifier(source.attributes).name + ")){", 2);
+    var ids = getIdentifiers(source.attributes);
+    var stats = "";
+    for (var i = 0; i < ids.length; i++) {
+        stats += source.controller_object.toLowerCase() + "." + ids[i].name;
+        i < ids.length - 1 ? stats += ", " : undefined;
+    }
+    sc.add("if(!this.exist(" + stats + ")){", 2);
     sc.add("this.add(" + source.controller_object.toLowerCase() + ");", 3);
     sc.add("}", 2);
     sc.add("}", 1);
@@ -45,19 +51,19 @@ function createControllerConstructor(source) {
 exports.createControllerConstructor = createControllerConstructor;
 function createControllerExist(source) {
     var sc = new samara_1.SourceObject();
-    var identifier = getIdentifier(source.attributes);
-    sc.add("exist(" + identifier.name + ":" + identifier.type + "):Boolean{", 1);
-    sc.add("return this.get(" + identifier.name + ") !== undefined;", 2);
+    var parasAndStats = getIdentifiersParasAndStats(source, "");
+    sc.add("exist(" + parasAndStats.paras + "):Boolean{", 1);
+    sc.add("return this.get(" + parasAndStats.names + ") !== undefined;", 2);
     sc.add("}", 1);
     return sc.getString();
 }
 exports.createControllerExist = createControllerExist;
 function createControllerGet(source) {
     var sc = new samara_1.SourceObject();
-    var identifier = getIdentifier(source.attributes);
-    sc.add("get(" + identifier.name + ":" + identifier.type + "):" + source.object_name + "{", 1);
+    var parasAndStats = getIdentifiersParasAndStats(source, source.controller_object.toLowerCase());
+    sc.add("get(" + parasAndStats.paras + "):" + source.object_name + "{", 1);
     sc.add("for(let " + source.controller_object.toLowerCase() + " of this." + source.array + "){", 2);
-    sc.add("if(" + source.controller_object.toLowerCase() + "." + identifier.name + " === " + identifier.name + "){", 3);
+    sc.add("if(" + parasAndStats.stats + "){", 3);
     sc.add("return " + source.controller_object.toLowerCase() + ";", 4);
     sc.add("}", 3);
     sc.add("}", 2);
@@ -133,10 +139,11 @@ function createControllerLoad(source) {
 exports.createControllerLoad = createControllerLoad;
 function createControllerRemove(source) {
     var sc = new samara_1.SourceObject();
-    var identifier = getIdentifier(source.attributes);
-    sc.add("remove(" + identifier.name + ":" + identifier.type + "):Boolean{", 1);
+    var ids = getIdentifiers(source.attributes);
+    var parasAndStats = getIdentifiersParasAndStats(source, "this." + source.array + "[i]");
+    sc.add("remove(" + parasAndStats.paras + "):Boolean{", 1);
     sc.add("for(let i=0; i<this." + source.array + ".length; i++){", 2);
-    sc.add("if(this." + source.array + "[i]." + identifier.name + " === " + identifier.name + "){", 3);
+    sc.add("if(" + parasAndStats.stats + "){", 3);
     sc.add("this." + source.array + ".splice(i, 1);", 4);
     sc.add("return true;", 4);
     sc.add("}", 3);
@@ -192,7 +199,7 @@ function createObjectDeclarations(source) {
     sc.add("//Declarations", 1);
     for (var _i = 0, _a = source.attributes; _i < _a.length; _i++) {
         var att = _a[_i];
-        att.type === "array" ? att.type = "[]" : undefined;
+        att.type === "array" ? att.type = "any[]" : undefined;
         sc.add("private _" + att.name + ":" + att.type + ";", 1);
     }
     return sc.getString();
@@ -222,19 +229,43 @@ function createObjectSetMethods(source) {
     return sc.getString();
 }
 exports.createObjectSetMethods = createObjectSetMethods;
-function getIdentifier(attributes) {
+function getIdentifiers(attributes) {
+    var ids = [];
     for (var _i = 0, attributes_1 = attributes; _i < attributes_1.length; _i++) {
         var att = attributes_1[_i];
         if (att.identifier) {
-            return {
+            var object = {
                 name: att.name,
                 type: att.type
             };
+            ids.push(object);
         }
     }
-    return undefined;
+    return ids;
 }
-exports.getIdentifier = getIdentifier;
+exports.getIdentifiers = getIdentifiers;
+function getIdentifiersParasAndStats(source, stats_begin) {
+    var ids = getIdentifiers(source.attributes);
+    var paras = "";
+    var stats = "";
+    var names = "";
+    for (var i = 0; i < ids.length; i++) {
+        paras += ids[i].name + ":" + ids[i].type;
+        stats += stats_begin + "." + ids[i].name + " === " + ids[i].name;
+        names += ids[i].name;
+        if (i < ids.length - 1) {
+            paras += ", ";
+            stats += " && ";
+            names += ", ";
+        }
+    }
+    return {
+        paras: paras,
+        stats: stats,
+        names: names
+    };
+}
+exports.getIdentifiersParasAndStats = getIdentifiersParasAndStats;
 function writeFile(path, content) {
     sys.writeFile(path, content);
 }
