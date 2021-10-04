@@ -196,8 +196,12 @@ export function createObjectDeclarations(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("//Declarations", 1);
     for(let att of source.attributes){
-        att.type === "array" ? att.type = "any[]" : undefined;
-        sc.add("private _" + att.name + ":" + att.type + " = [];", 1);
+        if(att.type === "array"){
+            att.type = "any[]";
+            sc.add("private _" + att.name + ":" + att.type + " = [];", 1);
+        }else{
+            sc.add("private _" + att.name + ":" + att.type + ";", 1);
+        }
     }
     return sc.getString();
 }

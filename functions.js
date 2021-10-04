@@ -199,8 +199,13 @@ function createObjectDeclarations(source) {
     sc.add("//Declarations", 1);
     for (var _i = 0, _a = source.attributes; _i < _a.length; _i++) {
         var att = _a[_i];
-        att.type === "array" ? att.type = "any[]" : undefined;
-        sc.add("private _" + att.name + ":" + att.type + " = [];", 1);
+        if (att.type === "array") {
+            att.type = "any[]";
+            sc.add("private _" + att.name + ":" + att.type + " = [];", 1);
+        }
+        else {
+            sc.add("private _" + att.name + ":" + att.type + ";", 1);
+        }
     }
     return sc.getString();
 }
