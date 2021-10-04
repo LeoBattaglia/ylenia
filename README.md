@@ -1,5 +1,5 @@
 # Ylenia
-TypeScript-Code- and JSON-Generator. Based on a Definition in a JSON-File, this DataSource-Object generates for each DataSource a JSON-Source-File and two TypeScript-Classes to access data.
+TypeScript-Code- and JSON-Generator. Based on a Definition in a JSON-File, this DataSource-Object generates for each DataSource a JSON-Source-File to store and two TypeScript-Classes to access and work data.
 
 ### JSON-File
 The generated JSON-Files are ready to contain all data, defined in Definition-File. You don't have to think about the structure because you only access the data with the following two TypeScript-Files:
