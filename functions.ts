@@ -80,15 +80,18 @@ export function createControllerGetAll(source):string{
 
 export function createControllerImports(source):string{
     let file_controller:string = source.file_controller;
-    let file_json:string = source.file_json;
-    let file_object:string = source.file_object;
-    file_json = createControllerImportsPath(file_controller, file_json);
-    file_object = createControllerImportsPath(file_controller, file_object).replace(".ts", "");
-
     let sc:SourceObject = new SourceObject();
     sc.add("//Imports", 0);
+    let file_json:string = source.file_json;
+    file_json = createControllerImportsPath(file_controller, file_json);
     sc.add("import * as data from \"" + file_json + "\";", 0);
-    sc.add("import {" + source.object_name + "} from \"" + file_object + "\";", 0);
+    if(!sys.isNull(source.controller_object_import)){
+        sc.add("import " + source.controller_object_import + ";", 0);
+    }else{
+        let file_object:string = source.file_object;
+        file_object = createControllerImportsPath(file_controller, file_object).replace(".ts", "");
+        sc.add("import {" + source.object_name + "} from \"" + file_object + "\";", 0);
+    }
     return sc.getString();
 }
 

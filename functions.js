@@ -82,14 +82,19 @@ function createControllerGetAll(source) {
 exports.createControllerGetAll = createControllerGetAll;
 function createControllerImports(source) {
     var file_controller = source.file_controller;
-    var file_json = source.file_json;
-    var file_object = source.file_object;
-    file_json = createControllerImportsPath(file_controller, file_json);
-    file_object = createControllerImportsPath(file_controller, file_object).replace(".ts", "");
     var sc = new samara_1.SourceObject();
     sc.add("//Imports", 0);
+    var file_json = source.file_json;
+    file_json = createControllerImportsPath(file_controller, file_json);
     sc.add("import * as data from \"" + file_json + "\";", 0);
-    sc.add("import {" + source.object_name + "} from \"" + file_object + "\";", 0);
+    if (!sys.isNull(source.controller_object_import)) {
+        sc.add("import " + source.controller_object_import + ";", 0);
+    }
+    else {
+        var file_object = source.file_object;
+        file_object = createControllerImportsPath(file_controller, file_object).replace(".ts", "");
+        sc.add("import {" + source.object_name + "} from \"" + file_object + "\";", 0);
+    }
     return sc.getString();
 }
 exports.createControllerImports = createControllerImports;
