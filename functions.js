@@ -15,7 +15,7 @@ function createControllerAdd(source) {
 exports.createControllerAdd = createControllerAdd;
 function createControllerAddProtected(source) {
     var sc = new samara_1.SourceObject();
-    sc.add("addProtected(" + source.controller_object.toLowerCase() + ":" + source.object_name + "):void{", 1);
+    sc.add("addProtected(" + source.controller_object.toLowerCase() + ":" + source.object_name + "):Boolean{", 1);
     var ids = getIdentifiers(source.attributes);
     var stats = "";
     for (var i = 0; i < ids.length; i++) {
@@ -24,6 +24,9 @@ function createControllerAddProtected(source) {
     }
     sc.add("if(!this.exist(" + stats + ")){", 2);
     sc.add("this.add(" + source.controller_object.toLowerCase() + ");", 3);
+    sc.add("return true;", 3);
+    sc.add("}else{", 2);
+    sc.add("return false;", 3);
     sc.add("}", 2);
     sc.add("}", 1);
     return sc.getString();
