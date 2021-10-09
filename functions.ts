@@ -157,7 +157,8 @@ export function createControllerRemove(source):string{
 export function createControllerSave(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("save(){", 1);
-    sc.add("let content:string = JSON.stringify(this." + source.array + ");", 2);
+    //let content:string = "{\"" + source.array + "\":" + JSON.stringify(this.people) + "}";
+    sc.add("let content:string = \"{\\\"\"" + source.array + "\\\":}", 2);
     //sc.add("content = content.replace(\"\\\"_\", \"\\\"\");", 2);
     sc.add("fs.writeFile(\"" + source.file_json + "\", content, err => {", 2);
     sc.add("if(err){", 3);
