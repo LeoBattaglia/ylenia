@@ -77,8 +77,8 @@ var DataSources = /** @class */ (function () {
         sc.add("export class " + source.object_name + ext + "{", 0);
         sc.add(func.createObjectDeclarations(source), 0);
         sc.add(func.createObjectConstructor(source), 0);
-        sc.add(func.createObjectGetMethods(source), 0);
-        sc.add(func.createObjectSetMethods(source), 0);
+        //sc.add(func.createObjectGetMethods(source), 0);
+        //sc.add(func.createObjectSetMethods(source), 0);
         sc.add("}", 0);
         sys.writeFile(source.file_object, sc.getString());
     };

@@ -157,10 +157,8 @@ export function createControllerRemove(source):string{
 export function createControllerSave(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("save(){", 1);
-    //sc.add("for(let " + source.controller_object.toLowerCase() + " of this." + source.controller_array + "){", 2);
     sc.add("let content:string = JSON.stringify(this." + source.array + ");", 2);
-    //sc.add("func.writeFile(\"" + source.file_json + "\", json);", 2);
-
+    //sc.add("content = content.replace(\"\\\"_\", \"\\\"\");", 2);
     sc.add("fs.writeFile(\"" + source.file_json + "\", content, err => {", 2);
     sc.add("if(err){", 3);
     sc.add("console.error(err);", 4);
@@ -201,15 +199,15 @@ export function createObjectDeclarations(source):string{
     for(let att of source.attributes){
         if(att.type === "array"){
             att.type = "any[]";
-            sc.add("private _" + att.name + ":" + att.type + " = [];", 1);
+            sc.add("private " + att.name + ":" + att.type + " = [];", 1);
         }else{
-            sc.add("private _" + att.name + ":" + att.type + ";", 1);
+            sc.add("private " + att.name + ":" + att.type + ";", 1);
         }
     }
     return sc.getString();
 }
 
-export function createObjectGetMethods(source):string{
+/*export function createObjectGetMethods(source):string{
     let sc:SourceObject = new SourceObject();
     sc.add("//Get-Methods", 1);
     for(let i = 0; i < source.attributes.length; i++){
@@ -231,7 +229,7 @@ export function createObjectSetMethods(source):string{
         i < source.attributes.length - 1 ? sc.newLine() : undefined;
     }
     return sc.getString();
-}
+}*/
 
 export function getIdentifiers(attributes):any[]{
     let ids:any[] = [];

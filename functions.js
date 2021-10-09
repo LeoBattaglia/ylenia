@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.writeFile = exports.getIdentifiersParasAndStats = exports.getIdentifiers = exports.createObjectSetMethods = exports.createObjectGetMethods = exports.createObjectDeclarations = exports.createObjectConstructor = exports.createControllerSave = exports.createControllerRemove = exports.createControllerLoad = exports.createControllerImports = exports.createControllerGetAll = exports.createControllerGet = exports.createControllerExist = exports.createControllerConstructor = exports.createControllerConstants = exports.createControllerAddProtected = exports.createControllerAdd = void 0;
+exports.writeFile = exports.getIdentifiersParasAndStats = exports.getIdentifiers = exports.createObjectDeclarations = exports.createObjectConstructor = exports.createControllerSave = exports.createControllerRemove = exports.createControllerLoad = exports.createControllerImports = exports.createControllerGetAll = exports.createControllerGet = exports.createControllerExist = exports.createControllerConstructor = exports.createControllerConstants = exports.createControllerAddProtected = exports.createControllerAdd = void 0;
 //Imports
 var samara_1 = require("samara");
 var sys = require("samara");
@@ -161,9 +161,8 @@ exports.createControllerRemove = createControllerRemove;
 function createControllerSave(source) {
     var sc = new samara_1.SourceObject();
     sc.add("save(){", 1);
-    //sc.add("for(let " + source.controller_object.toLowerCase() + " of this." + source.controller_array + "){", 2);
     sc.add("let content:string = JSON.stringify(this." + source.array + ");", 2);
-    //sc.add("func.writeFile(\"" + source.file_json + "\", json);", 2);
+    //sc.add("content = content.replace(\"\\\"_\", \"\\\"\");", 2);
     sc.add("fs.writeFile(\"" + source.file_json + "\", content, err => {", 2);
     sc.add("if(err){", 3);
     sc.add("console.error(err);", 4);
@@ -206,19 +205,19 @@ function createObjectDeclarations(source) {
         var att = _a[_i];
         if (att.type === "array") {
             att.type = "any[]";
-            sc.add("private _" + att.name + ":" + att.type + " = [];", 1);
+            sc.add("private " + att.name + ":" + att.type + " = [];", 1);
         }
         else {
-            sc.add("private _" + att.name + ":" + att.type + ";", 1);
+            sc.add("private " + att.name + ":" + att.type + ";", 1);
         }
     }
     return sc.getString();
 }
 exports.createObjectDeclarations = createObjectDeclarations;
-function createObjectGetMethods(source) {
-    var sc = new samara_1.SourceObject();
+/*export function createObjectGetMethods(source):string{
+    let sc:SourceObject = new SourceObject();
     sc.add("//Get-Methods", 1);
-    for (var i = 0; i < source.attributes.length; i++) {
+    for(let i = 0; i < source.attributes.length; i++){
         sc.add("get " + source.attributes[i].name + "():" + source.attributes[i].type + "{", 1);
         sc.add("return this._" + source.attributes[i].name + ";", 2);
         sc.add("}", 1);
@@ -226,19 +225,18 @@ function createObjectGetMethods(source) {
     }
     return sc.getString();
 }
-exports.createObjectGetMethods = createObjectGetMethods;
-function createObjectSetMethods(source) {
-    var sc = new samara_1.SourceObject();
+
+export function createObjectSetMethods(source):string{
+    let sc:SourceObject = new SourceObject();
     sc.add("//Set-Methods", 1);
-    for (var i = 0; i < source.attributes.length; i++) {
+    for(let i = 0; i < source.attributes.length; i++){
         sc.add("set " + source.attributes[i].name + "(value:" + source.attributes[i].type + "){", 1);
         sc.add("this._" + source.attributes[i].name + " = value;", 2);
         sc.add("}", 1);
         i < source.attributes.length - 1 ? sc.newLine() : undefined;
     }
     return sc.getString();
-}
-exports.createObjectSetMethods = createObjectSetMethods;
+}*/
 function getIdentifiers(attributes) {
     var ids = [];
     for (var _i = 0, attributes_1 = attributes; _i < attributes_1.length; _i++) {
