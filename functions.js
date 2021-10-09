@@ -162,7 +162,7 @@ function createControllerSave(source) {
     var sc = new samara_1.SourceObject();
     sc.add("save(){", 1);
     //let content:string = "{\"" + source.array + "\":" + JSON.stringify(this.people) + "}";
-    sc.add("let content:string = \"{\\\"\"" + source.array + "\\\":}", 2);
+    sc.add("let content:string = \"{\\\"" + source.array + "\\\":\" + JSON.stringify(this.people) + \"};", 2);
     //sc.add("content = content.replace(\"\\\"_\", \"\\\"\");", 2);
     sc.add("fs.writeFile(\"" + source.file_json + "\", content, err => {", 2);
     sc.add("if(err){", 3);
