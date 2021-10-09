@@ -205,10 +205,10 @@ function createObjectDeclarations(source) {
         var att = _a[_i];
         if (att.type === "array") {
             att.type = "any[]";
-            sc.add("private " + att.name + ":" + att.type + " = [];", 1);
+            sc.add(att.name + ":" + att.type + " = [];", 1);
         }
         else {
-            sc.add("private " + att.name + ":" + att.type + ";", 1);
+            sc.add(att.name + ":" + att.type + ";", 1);
         }
     }
     return sc.getString();
